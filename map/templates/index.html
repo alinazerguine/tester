@@ -150,6 +150,7 @@
     function currentSlide(n) {
       showSlides(slideIndex = n);
       if (n == 2) {
+        //when iframe, reload
         document.getElementById("usa_map").contentWindow.location.reload();
       } else if (n == 3){
         document.getElementById("neb_map").contentWindow.location.reload();
