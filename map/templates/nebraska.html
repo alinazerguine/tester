@@ -34,13 +34,15 @@
 
 	<style type="text/css">
 		#back-button {
-			color: #eee;
+			color: #000;
 			border-radius: 0px;
-			background-color: #333;
+			background-color: grey;
 			border: none;
 			text-align: center;
 			padding: 15px 30px;
 			font-size: 16px;
+			position: absolute;
+			right: 18%;
 		}
 		#tt {
 			pointer-events: none;
@@ -495,7 +497,7 @@
 											return toolOut(d, this);
 										})
 										.on("click", function (d) {
-											alert("hello");
+											location.reload();
 										});
 									// click function
 									var j = 0;
