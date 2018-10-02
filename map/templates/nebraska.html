@@ -219,15 +219,16 @@
 
 
 		var coming, going;
-		d3.csv("{% static 'coming.csv' %}", function (data) {
+		d3.csv("{% static 'coming_nebraska.csv' %}", function (data) {
 
 			coming = data;
 
 		});
-		d3.csv("{% static 'going.csv' %}", function (data) {
+		function cycle(selected){
+			d3.csv("{% static 'going_nebraska.csv' %}", function (data) {
 			going = data;
 
-			d3.json("{% static 'states.json' %}", function (json) {
+			d3.json("{% static 'nebraska.json' %}", function (json) {
 
 				for (var i = 0; i < data.length; i++) {
 					var dataName = data[i].state;
@@ -334,6 +335,8 @@
 
 			});
 		});
+	}	
+	cycle()
 		/**
 		 * Automatically select location with State ID
 		 * 
@@ -370,7 +373,7 @@
 			if (my < 40) {
 				my = 40
 			};
-			return tooltip.style("position", "fixed").style("top", my + -30 + "px").style("left", mx + 200 + "px").html(
+			return tooltip.style("position", "fixed").style("top", my + -30 + "px").style("left", mx + 75 + "px").html(
 				"<div id='tipContainer'><div id='tipLocation'><b>" + data.id +
 				"</b></div><div id='tipKey'>Preference to move in: <b>" + formatC(data.properties.total_imm) +
 				"</b><br>Preference to move out: <b>" + formatC(data.properties.total_emm) + "</b><br>Net change: <b>" + formatC((
@@ -414,6 +417,7 @@
 		var i = 0;
 		
 		function clicked(select1) {
+			console.log(select1);
 			g.selectAll('.state').each(function(selected) {
 				i++;
 				//var coming = selected.properties;
