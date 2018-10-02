@@ -349,28 +349,28 @@
 
 							console.log(d['id']);
 							var seleted_id = d['id'];
-							// if (seleted_id == "California") {
-							// 	coming_url = "{% static 'coming_nebraska_california.csv' %}";
-							// 	going_url = "{% static 'going_nebraska_california.csv' %}";
-							// }else if (seleted_id == "Kansas") {
-							// 	coming_url = "{% static 'coming_nebraska_kansas.csv' %}";
-							// 	going_url = "{% static 'going_nebraska_kansas.csv' %}";
-							// }else if (seleted_id == "Iowa") {
-							// 	coming_url = "{% static 'coming_nebraska_iowa.csv' %}";
-							// 	going_url = "{% static 'going_nebraska_iowa.csv' %}";
-							// }else if (seleted_id == "Alabama") {
-							// 	coming_url = "{% static 'coming_nebraska_alabama.csv' %}";
-							// 	going_url = "{% static 'going_nebraska_alabama.csv' %}";
-							// }else if (seleted_id == "Montana") {
-							// 	coming_url = "{% static 'coming_nebraska_montana.csv' %}";
-							// 	going_url = "{% static 'going_nebraska_montana.csv' %}";
-							// }else {
-							// 	alert("please use good one");
-							// 	return;
-							// }
+							if (seleted_id == "California") {
+								coming_url = "{% static 'coming_nebraska_california.csv' %}";
+								going_url = "{% static 'going_nebraska_california.csv' %}";
+							}else if (seleted_id == "Kansas") {
+								coming_url = "{% static 'coming_nebraska_kansas.csv' %}";
+								going_url = "{% static 'going_nebraska_kansas.csv' %}";
+							}else if (seleted_id == "Iowa") {
+								coming_url = "{% static 'coming_nebraska_iowa.csv' %}";
+								going_url = "{% static 'going_nebraska_iowa.csv' %}";
+							}else if (seleted_id == "Alabama") {
+								coming_url = "{% static 'coming_nebraska_alabama.csv' %}";
+								going_url = "{% static 'going_nebraska_alabama.csv' %}";
+							}else if (seleted_id == "Montana") {
+								coming_url = "{% static 'coming_nebraska_montana.csv' %}";
+								going_url = "{% static 'going_nebraska_montana.csv' %}";
+							}else {
+								console.log("please use good one");
+								return;
+							}
 
-							coming_url = "{% static 'coming_nebraska_cycle.csv' %}";
-							going_url =  "{% static 'going_nebraska_cycle.csv' %}";
+							// coming_url = "{% static 'coming_nebraska_cycle.csv' %}";
+							// going_url =  "{% static 'going_nebraska_cycle.csv' %}";
 
 							d3.select("svg").remove();
 							$("#map").prepend("<button id='back-button'>RELOAD</button>");
