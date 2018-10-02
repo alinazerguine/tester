@@ -33,6 +33,15 @@
     <![endif]-->
 
 	<style type="text/css">
+		#back-button {
+			color: #eee;
+			border-radius: 0px;
+			background-color: #333;
+			border: none;
+			text-align: center;
+			padding: 15px 30px;
+			font-size: 16px;
+		}
 		#tt {
 			pointer-events: none;
 			color: white;
@@ -219,130 +228,387 @@
 
 
 		var coming, going;
-		d3.csv("{% static 'coming_nebraska.csv' %}", function (data) {
+		function cycle(g){
+			d3.csv("{% static 'coming_nebraska.csv' %}", function (data) {
 
-			coming = data;
-
-		});
-		function cycle(selected){
-			d3.csv("{% static 'going_nebraska.csv' %}", function (data) {
-			going = data;
-
-			d3.json("{% static 'nebraska.json' %}", function (json) {
-
-				for (var i = 0; i < data.length; i++) {
-					var dataName = data[i].state;
-					var tempObj = {};
-					for (var propt in data[i]) {
-						var valz = parseFloat(data[i][propt]);
-						tempObj[propt] = valz;
-					}
-
-					//Find the corresponding state inside the GeoJSON
-					for (var j = 0; j < json.features.length; j++) {
-						var jsonState = json.features[j].properties.name;
-
-						if (dataName == jsonState) {
-
-							matched = true;
-							json.features[j].properties.state = dataName;
-							json.features[j].id = dataName;
-							json.features[j].abbrev = data[i].abbrev;
-							json.features[j].ind = i;
-
-							for (var propt in tempObj) {
-
-								if (!isNaN(tempObj[propt])) {
-									json.features[j].properties[propt] = tempObj[propt];
-								}
-
-							}
-							break;
-						}
-					}
-				}
-
-
-				//Bind data and create one path per GeoJSON feature
-				g.selectAll("path")
-					.data(json.features)
-					.enter()
-					.append("path")
-					.attr("class", "state")
-					.attr("id", function (d) {
-						return d.properties.state;
-					})
-					.attr("d", path)
-					.attr("stroke-width", 0)
-					.style("stroke", "#666")
-					.style("fill", "none");
-
-				g.selectAll("circle")
-					.data(json.features)
-					.enter().append("circle")
-					.attr("cx", function (d) {
-						var centname = d.properties.name;
-						var ctroid;
-						ctroid = path.centroid(d)[0];
-						return ctroid;
-					})
-					.attr("cy", function (d) {
-						var centname = d.properties.name;
-						var ctroid;
-						ctroid = path.centroid(d)[1];
-						return ctroid;
-					})
-					.attr("r", function (d) {
-						// console.log(d);
-						var diff = d.properties.total_imm - d.properties.total_emm;
-						// console.log(diff);
-						return circleSize(Math.sqrt(Math.abs(diff * 12) / Math.PI));
-						//	return circleSize(Math.sqrt(Math.abs(diff)/Math.PI));	
-					})
-					.attr("class", "circ")
-					.attr("id", function (d) {
-						return d.abbrev;
-					})
-					.attr("fill", function (d) {
-						var diff = d.properties.total_imm - d.properties.total_emm;
-						if (diff > 0) {
-							return "#65a89d";
-						} else {
-							return "#a96a46";
-						}
-
-					})
-					.attr("fill-opacity", "0.5")
-					.attr("stroke", "#fff")
-					.attr("stroke-weight", "0.5")
-
-					.on("mouseover", function (d) {
-						return toolOver(d, this);
-					})
-					.on("mousemove", function (d) {
-						var m = d3.mouse(this);
-						mx = m[0];
-						my = m[1];
-						return toolMove(mx, my, d);
-					})
-					.on("mouseout", function (d) {
-						return toolOut(d, this);
-					})
-					.on("click", function (d) {
-						clicked(d)
-					});
-
+				coming = data;
 
 			});
-		});
-	}	
-	cycle()
+
+			d3.csv("{% static 'going_nebraska.csv' %}", function (data) {
+				going = data;
+
+				d3.json("{% static 'nebraska.json' %}", function (json) {
+
+					for (var i = 0; i < data.length; i++) {
+						var dataName = data[i].state;
+						var tempObj = {};
+						for (var propt in data[i]) {
+							var valz = parseFloat(data[i][propt]);
+							tempObj[propt] = valz;
+						}
+
+						//Find the corresponding state inside the GeoJSON
+						for (var j = 0; j < json.features.length; j++) {
+							var jsonState = json.features[j].properties.name;
+
+							if (dataName == jsonState) {
+
+								matched = true;
+								json.features[j].properties.state = dataName;
+								json.features[j].id = dataName;
+								json.features[j].abbrev = data[i].abbrev;
+								json.features[j].ind = i;
+
+								for (var propt in tempObj) {
+
+									if (!isNaN(tempObj[propt])) {
+										json.features[j].properties[propt] = tempObj[propt];
+									}
+
+								}
+								break;
+							}
+						}
+					}
+
+
+					//Bind data and create one path per GeoJSON feature
+					g.selectAll("path")
+						.data(json.features)
+						.enter()
+						.append("path")
+						.attr("class", "state")
+						.attr("id", function (d) {
+							return d.properties.state;
+						})
+						.attr("d", path)
+						.attr("stroke-width", 0)
+						.style("stroke", "#666")
+						.style("fill", "none");
+
+					g.selectAll("circle")
+						.data(json.features)
+						.enter().append("circle")
+						.attr("cx", function (d) {
+							var centname = d.properties.name;
+							var ctroid;
+							ctroid = path.centroid(d)[0];
+							return ctroid;
+						})
+						.attr("cy", function (d) {
+							var centname = d.properties.name;
+							var ctroid;
+							ctroid = path.centroid(d)[1];
+							return ctroid;
+						})
+						.attr("r", function (d) {
+							// console.log(d);
+							var diff = d.properties.total_imm - d.properties.total_emm;
+							// console.log(diff);
+							return circleSize(Math.sqrt(Math.abs(diff * 12) / Math.PI));
+							//	return circleSize(Math.sqrt(Math.abs(diff)/Math.PI));	
+						})
+						.attr("class", "circ")
+						.attr("id", function (d) {
+							return d.abbrev;
+						})
+						.attr("fill", function (d) {
+							var diff = d.properties.total_imm - d.properties.total_emm;
+							if (diff > 0) {
+								return "#65a89d";
+							} else {
+								return "#a96a46";
+							}
+
+						})
+						.attr("fill-opacity", "0.5")
+						.attr("stroke", "#fff")
+						.attr("stroke-weight", "0.5")
+
+						.on("mouseover", function (d) {
+							return toolOver(d, this);
+						})
+						.on("mousemove", function (d) {
+							var m = d3.mouse(this);
+							mx = m[0];
+							my = m[1];
+							return toolMove(mx, my, d);
+						})
+						.on("mouseout", function (d) {
+							return toolOut(d, this);
+						})
+						.on("click", function (d) {
+							
+							
+							var coming_url = "";
+							var going_url = "";
+
+							console.log(d['id']);
+							var seleted_id = d['id'];
+							// if (seleted_id == "California") {
+							// 	coming_url = "{% static 'coming_nebraska_california.csv' %}";
+							// 	going_url = "{% static 'going_nebraska_california.csv' %}";
+							// }else if (seleted_id == "Kansas") {
+							// 	coming_url = "{% static 'coming_nebraska_kansas.csv' %}";
+							// 	going_url = "{% static 'going_nebraska_kansas.csv' %}";
+							// }else if (seleted_id == "Iowa") {
+							// 	coming_url = "{% static 'coming_nebraska_iowa.csv' %}";
+							// 	going_url = "{% static 'going_nebraska_iowa.csv' %}";
+							// }else if (seleted_id == "Alabama") {
+							// 	coming_url = "{% static 'coming_nebraska_alabama.csv' %}";
+							// 	going_url = "{% static 'going_nebraska_alabama.csv' %}";
+							// }else if (seleted_id == "Montana") {
+							// 	coming_url = "{% static 'coming_nebraska_montana.csv' %}";
+							// 	going_url = "{% static 'going_nebraska_montana.csv' %}";
+							// }else {
+							// 	alert("please use good one");
+							// 	return;
+							// }
+
+							coming_url = "{% static 'coming_nebraska_cycle.csv' %}";
+							going_url =  "{% static 'going_nebraska_cycle.csv' %}";
+
+							d3.select("svg").remove();
+							$("#map").prepend("<button id='back-button'>RELOAD</button>");
+							tooltip.style("visibility", "hidden");
+							tooltip2.style("visibility", "hidden");
+							var projection = d3.geo.albersUsa()
+								.scale(1000)
+								.translate([w / 2, h / 2]);
+							var path = d3.geo.path()
+								.projection(projection);
+							var svg1 = d3.select("#map")
+									.append("svg")
+									.attr("width", w)
+									.attr("height", h);
+							var fp = d3.format(".1f");
+							var g1 = svg1.append("g");
+
+							
+							var coming1, going1;
+							// cycle function
+							d3.csv( coming_url , function (data) {
+
+								coming1 = data;
+
+							});
+
+							d3.csv( going_url, function (data) {
+								going1 = data;
+
+								d3.json("{% static 'nebraska.json' %}", function (json1) {
+
+									for (var i = 0; i < data.length; i++) {
+										var dataName = data[i].state;
+										var tempObj = {};
+										for (var propt in data[i]) {
+											var valz = parseFloat(data[i][propt]);
+											tempObj[propt] = valz;
+										}
+
+										//Find the corresponding state inside the GeoJSON
+										for (var j = 0; j < json1.features.length; j++) {
+											var jsonState = json1.features[j].properties.name;
+
+											if (dataName == jsonState) {
+
+												matched = true;
+												json1.features[j].properties.state = dataName;
+												json1.features[j].id = dataName;
+												json1.features[j].abbrev = data[i].abbrev;
+												json1.features[j].ind = i;
+
+												for (var propt in tempObj) {
+
+													if (!isNaN(tempObj[propt])) {
+														json1.features[j].properties[propt] = tempObj[propt];
+													}
+
+												}
+												break;
+											}
+										}
+									}
+
+
+									//Bind data and create one path per GeoJSON feature
+									g1.selectAll("path")
+										.data(json1.features)
+										.enter()
+										.append("path")
+										.attr("class", "state")
+										.attr("id", function (d) {
+											return d.properties.state;
+										})
+										.attr("d", path)
+										.attr("stroke-width", 0)
+										.style("stroke", "#666")
+										.style("fill", "none");
+
+									g1.selectAll("circle")
+										.data(json1.features)
+										.enter().append("circle")
+										.attr("cx", function (d) {
+											var centname = d.properties.name;
+											var ctroid;
+											ctroid = path.centroid(d)[0];
+											return ctroid;
+										})
+										.attr("cy", function (d) {
+											var centname = d.properties.name;
+											var ctroid;
+											ctroid = path.centroid(d)[1];
+											return ctroid;
+										})
+										.attr("r", function (d) {
+											var diff = d.properties.total_imm - d.properties.total_emm;
+											return circleSize(Math.sqrt(Math.abs(diff * 12) / Math.PI));
+										})
+										.attr("class", "circ")
+										.attr("id", function (d) {
+											return d.abbrev;
+										})
+										.attr("fill", function (d) {
+											var diff = d.properties.total_imm - d.properties.total_emm;
+											if (diff > 0) {
+												return "#65a89d";
+											} else {
+												return "#a96a46";
+											}
+
+										})
+										.attr("fill-opacity", "0.5")
+										.attr("stroke", "#fff")
+										.attr("stroke-weight", "0.5")
+
+										.on("mouseover", function (d) {
+											return toolOver(d, this);
+										})
+										.on("mousemove", function (d) {
+											var m = d3.mouse(this);
+											mx = m[0];
+											my = m[1];
+											return toolMove(mx, my, d);
+										})
+										.on("mouseout", function (d) {
+											return toolOut(d, this);
+										})
+										.on("click", function (d) {
+											alert("hello");
+										});
+									// click function
+									var j = 0;
+									g1.selectAll('.state').each(function(selected) {
+										j++;
+										//var coming = selected.properties;
+										var selname = selected.id;
+
+										var homex = path.centroid(selected)[0];
+										var homey = path.centroid(selected)[1];
+
+										var classname = "goingline" + j;
+										g1.selectAll("." + classname)
+											.attr("stroke-dasharray", 0)
+											.remove();
+
+										g1.selectAll("." + classname)
+											.data(going1)
+											.enter().append("path")
+											.attr("class", "" + classname)
+
+											.attr("d", function (d, i) {
+												var abb = d.abbrev;
+												var finalval = coming1[i][selname] - going1[i][selname];
+
+												var theState = d3.select("#" + abb);
+
+												if (!isNaN(finalval)) {
+													var startx = path.centroid(theState[0][0].__data__)[0];
+													var starty = path.centroid(theState[0][0].__data__)[1];
+
+													if (finalval > 0) {
+														return "M" + startx + "," + starty + " Q" + (startx + homex) / 2 + " " + (starty + homey) / 1.5 + " " + homex +
+															" " + homey;
+
+													} else {
+														return "M" + homex + "," + homey + " Q" + (startx + homex) / 2 + " " + (starty + homey) / 2.5 + " " + startx +
+															" " + starty;
+													}
+												}
+											})
+											.call(function(path){
+												path.transition()
+													.delay(4000)
+													.style('fill', function () {
+
+														var length = 10000;
+														this.style.transition = this.style.WebkitTransition = 'none';
+														this.style.strokeDasharray = '0.1 10';
+														this.style.strokeDashoffset = length;
+														this.getBoundingClientRect();
+														this.style.transition = this.style.WebkitTransition = 'stroke-dashoffset 1000000ms ease-out';
+														this.style.strokeDashoffset = '0';
+														return 'none';
+													})
+											})
+
+											.attr("stroke-width", function (d, i) {
+												var finalval = coming1[i][selname] - going1[i][selname];
+
+												return lineSize(parseFloat(Math.abs(finalval)));
+											})
+											.attr("stroke-opacity", function (d, i) {
+												var finalval = coming1[i][selname] - going1[i][selname];
+
+												return lineOpacity(parseFloat(Math.abs(finalval)));
+											})
+											.attr("stroke", function (d, i) {
+												var finalval = coming1[i][selname] - going1[i][selname];
+												if (finalval > 0) {
+
+													return "#65a89d";
+												} else {
+													return "#a96a46";
+												}
+
+											})
+											.attr("fill", "none")
+											.attr("stroke-linecap", "round")
+											.on("mouseover", function (d) {
+												return toolOver2(d, this);
+											})
+											.on("mousemove", function (d, i) {
+												var m = d3.mouse(this);
+												mx = m[0];
+												my = m[1];
+												return toolMove2(mx, my, selname, d.state, coming1[i][selname], going1[i][selname]);
+											})
+											.on("mouseout", function (d) {
+												return toolOut2(d, this);
+											});
+									});
+
+
+								});
+							});
+
+							$("#back-button").on("click", function(e){
+								location.reload();
+							});
+						});
+
+
+				});
+			});
+		}	
+		cycle(g);
 		/**
 		 * Automatically select location with State ID
 		 * 
 		 */
 		d3.select(window).on("load", function (data) {
-			clicked();
+			clicked(g, coming, going);
 			//document.getElementById("NE").dispatchEvent(new Event('click')); //Texas
 		});
 
@@ -416,8 +682,7 @@
 
 		var i = 0;
 		
-		function clicked(select1) {
-			console.log(select1);
+		function clicked(g, coming, going) {
 			g.selectAll('.state').each(function(selected) {
 				i++;
 				//var coming = selected.properties;
@@ -503,6 +768,7 @@
 
 
 		function transition(path) {
+			// console.log(path);
 			path.transition()
 				.delay(4000)
 				.style('fill', function () {
